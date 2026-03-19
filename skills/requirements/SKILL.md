@@ -58,19 +58,25 @@ description: 需求理解阶段 - 理解需求、技术选型、存量代码分�
 
 | 步骤 | 维度 | 选项配置 |
 |------|------|----------|
-| 1 | 框架 | React / Vue / Next.js / Nuxt / 原生 JS / 其他 |
-| 2 | 语言 | TypeScript / JavaScript |
-| 3 | 样式方案 | Tailwind / CSS Modules / Styled-components / 其他 |
-| 4 | 状态管理 | Redux / Zustand / Pinia / Vuex / Context API / 其他 |
-| 5 | 数据获取 | Tanstack Query / SWR / Axios / Fetch / 其他 |
-| 6 | 路由 | React Router / Next.js 内置 / Vue Router / 其他 |
-| 7 | 构建工具 | Vite / Webpack / Bun / Rollup / 其他 |
+| 1 | 站点类型 | PC端 / 移动端 / 自适应 |
+| 2 | 框架 | React / Vue / Next.js / Nuxt / 原生 JS / 其他 |
+| 3 | 语言 | TypeScript / JavaScript |
+| 4 | 样式方案 | Tailwind / CSS Modules / Styled-components / 其他 |
+| 5 | 状态管理 | Redux / Zustand / Pinia / Vuex / Context API / 其他 |
+| 6 | 数据获取 | Tanstack Query / SWR / Axios / Fetch / 其他 |
+| 7 | 路由 | React Router / Next.js 内置 / Vue Router / 其他 |
+| 8 | 构建工具 | Vite / Webpack / Bun / Rollup / 其他 |
+| 9 | 组件库 | shadcn / antd / elementUI / 其他 |
 
 **关键约束：**
 1. **一次只问一个维度** - 禁止使用多选框一次性询问多个维度
 2. **必须使用选项按钮** - 以 `options` 数组形式提供可点击选项，禁止纯文字列表
 3. **等待用户响应** - 上一步得到选择结果后，才能询问下一步
 4. **包含"其他"选项** - 每个维度都必须有"其他"选项，允许用户自定义
+
+**完成技术选型后必须询问：**
+- 在完成上述所有技术选型询问后，必须向用户提问："是否还需要指定其他 npm 包？例如：图表库、日期处理库、表单验证库等。"
+- 如果用户指定了其他 npm 包，将这些包记录在需求理解文档的「技术选型」部分
 
 3. 存量代码协作（如适用）
 如果是在既有代码库中工作：
