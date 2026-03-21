@@ -38,4 +38,5 @@ AskUserQuestion 参数：
 
 ### 完成后
 
-向用户展示验证总结（仅针对已验证的项目）
+1. 向用户展示验证总结（仅针对已验证的项目）
+2. 使用`code-review/skill.md` review代码
