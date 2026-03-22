@@ -72,6 +72,7 @@ description: 需求理解阶段 - 理解需求、技术选型、存量代码分�
 | 7 | 路由 | React Router / Next.js 内置 / Vue Router / 其他 |
 | 8 | 构建工具 | Vite / Webpack / Bun / Rollup / 其他 |
 | 9 | 组件库 | shadcn / antd / antd-mobile / elementUI / 其他 |
+| 10 | 包管理工具 ｜ pnpm / npm / yarn / 其他 ｜
 
 **关键约束：**
 1. **一次只问一个维度** - 禁止使用多选框一次性询问多个维度
@@ -119,11 +120,18 @@ description: 需求理解阶段 - 理解需求、技术选型、存量代码分�
 ### 3. 技术选型
 [包含前端框架，开发语言，样式方案，状态管理，储存方案，构建工具等，需要列出对应的版本, **优先使用最新稳定版本**]
 
-### 4. 目录结构（如新项目）
+### 4. 目录结构
 [建议的目录结构]
+**约束**
+- **组件拆分必须要参考/prototype中的原型页面，参考/prototype/prototype.md了解页面结构，样式也要复原原型页面的设计**
+- 页面组件（路由组件）需要标明所使用的原型html，如果没有则标明没有使用原型html
+  示例：
+  │   ├── bookshelf/
+  │   │   └── index.tsx              # 书架页 页面原型:prototype/bookshelf.html
+  │   ├── detail/
+  │   │   └── index.tsx              # 书籍详情页 页面原型:prototype/detail.html
 
 ### 5. 组件设计
-- **组件拆分必须要参考/prototype中的原型页面，参考/prototype/prototype.md了解页面结构，样式也要复原原型页面的设计**
 - 核心组件: [列出主要组件，包括组件的props]
 - 数据流: [组件间数据传递方式]
 
