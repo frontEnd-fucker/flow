@@ -132,6 +132,7 @@ description: 需求理解阶段 - 理解需求、技术选型、存量代码分�
   │   │   └── index.tsx              # 书籍详情页 页面原型:prototype/detail.html
 
 ### 5. 组件设计
+- 样式参考原型页面：`/prototype/prototype.md` 及对应 原型HTML文件
 - 核心组件: [列出主要组件，包括组件的props]
 - 数据流: [组件间数据传递方式]
 
