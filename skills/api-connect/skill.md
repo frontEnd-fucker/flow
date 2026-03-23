@@ -30,21 +30,32 @@ description: 将本地 mock API 转换为真实 API 接口，通过 OpenAPI 规�
 **执行 SDK 生成：**
 
 ```bash
-# 使用 npx 运行 openapi-generator-cli
-npx @openapitools/openapi-generator-cli generate \
-  -i <openapi文档路径> \
-  -g typescript-axios \
+# 使用 swagger-typescript-api 生成 SDK
+npx swagger-typescript-api \
+  -p <openapi文档路径> \
   -o ./api \
-  --additional-properties=supportsES6=true,modelPropertyNaming=original
+  --name api.ts \
+  --axios
 ```
+
+**常用配置选项：**
+
+| 选项 | 说明 |
+|------|------|
+| `-p, --path` | OpenAPI 文档路径（JSON/YAML） |
+| `-o, --output` | 输出目录（默认 `./api`） |
+| `--name` | 生成的文件名（默认 `Api.ts`） |
+| `--axios` | 使用 axios 作为 HTTP 客户端 |
+| `--fetch` | 使用 fetch 作为 HTTP 客户端 |
+| `--modular` | 生成模块化代码（分离类型和 API） |
+| `--single-http-client` | 生成单一 HTTP 客户端实例 |
+| `--default-response` | 指定默认响应类型 |
 
 **生成后验证：**
 1. 检查 `./api/` 目录是否成功创建
 2. 确认包含以下关键文件：
-   - `api.ts` - API 类定义
-   - `base.ts` - 基础配置和 axios 实例
-   - `configuration.ts` - 配置类
-   - `index.ts` - 入口文件
+   - `api.ts` - 包含所有 API 方法和类型定义
+   - 如果使用 `--modular` 模式，还会有分离的 types 和 http-client 文件
 3. 检查 TypeScript 编译是否通过
 
 ### 步骤 3: 配置真实 API 连接
@@ -212,15 +223,37 @@ module.exports = {
 根据前面收集的信息，更新 SDK 配置：
 
 ```typescript
-// 在 api/base.ts 中设置 baseURL
-const BASE_URL = 'https://api.example.com'; // 用户提供的地址
+// 方式 1: 创建 Api 实例时传入 baseURL
+import { Api } from './api';
 
-// 或在创建 API 实例时传入
-const usersApi = new UsersApi(
-  new Configuration({
-    basePath: 'https://api.example.com'
-  })
-);
+const api = new Api({
+  baseURL: 'https://api.example.com', // 用户提供的地址
+});
+
+// 方式 2: 如果使用 axios，配置 axios defaults
+import axios from 'axios';
+axios.defaults.baseURL = 'https://api.example.com';
+
+// 使用
+const users = await api.users.usersGet();
+```
+
+**配置认证：**
+
+```typescript
+// Bearer Token 认证
+const api = new Api({
+  baseURL: 'https://api.example.com',
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+});
+
+// 或添加请求拦截器
+api.instance.interceptors.request.use((config) => {
+  config.headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
+  return config;
+});
 ```
 
 ### 步骤 4: 分析 Mock API 并展示映射关系
@@ -305,7 +338,7 @@ const usersApi = new UsersApi(
 
 1. **替换 API 调用：**
    - 将 `fetch('/api/users')` 替换为 SDK 方法调用
-   - 添加 SDK 导入语句：`import { UsersApi } from '../api'`
+   - 添加 SDK 导入语句：`import { Api } from '../api'`
 
 2. **替换类型定义：**
    - 删除原有的 mock 类型定义文件
@@ -327,12 +360,14 @@ export async function getUsers(): Promise<User[]> {
 转换后：
 ```typescript
 // src/services/user.ts
-import { UsersApi, User } from '../../api';
+import { Api, User } from '../../api';
 
-const usersApi = new UsersApi();
+const api = new Api({
+  baseURL: 'https://api.example.com', // 或使用环境变量
+});
 
 export async function getUsers(): Promise<User[]> {
-  const res = await usersApi.usersGet();
+  const res = await api.users.usersGet();
   return res.data;
 }
 ```
@@ -363,15 +398,17 @@ export function useUsers() {
 ```typescript
 // src/hooks/useUsers.ts
 import { useQuery } from '@tanstack/react-query';
-import { UsersApi } from '../api';
+import { Api } from '../api';
 
-const usersApi = new UsersApi();
+const api = new Api({
+  baseURL: 'https://api.example.com', // 或使用环境变量
+});
 
 export function useUsers() {
   return useQuery({
     queryKey: ['users'],
     queryFn: async () => {
-      const res = await usersApi.usersGet();
+      const res = await api.users.usersGet();
       return res.data;
     }
   });
@@ -400,7 +437,7 @@ export function useCreateUser() {
 export function useCreateUser() {
   return useMutation({
     mutationFn: async (user: CreateUserRequest) => {
-      const res = await usersApi.usersPost(user);
+      const res = await api.users.usersPost(user);
       return res.data;
     }
   });
@@ -434,14 +471,16 @@ export function useUsers() {
 ```typescript
 // src/hooks/useUsers.ts
 import useSWR from 'swr';
-import { UsersApi } from '../api';
+import { Api } from '../api';
 
-const usersApi = new UsersApi();
+const api = new Api({
+  baseURL: 'https://api.example.com', // 或使用环境变量
+});
 
 export function useUsers() {
   return useSWR(
     '/api/users',
-    () => usersApi.usersGet().then(r => r.data)
+    () => api.users.usersGet().then(r => r.data)
   );
 }
 ```
@@ -484,9 +523,11 @@ export const userApi = createApi({
 ```typescript
 // src/store/userApi.ts
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { UsersApi } from '../api';
+import { Api } from '../api';
 
-const usersApi = new UsersApi();
+const api = new Api({
+  baseURL: 'https://api.example.com', // 或使用环境变量
+});
 
 export const userApi = createApi({
   reducerPath: 'userApi',
@@ -494,13 +535,13 @@ export const userApi = createApi({
   endpoints: (builder) => ({
     getUsers: builder.query<User[], void>({
       queryFn: async () => {
-        const res = await usersApi.usersGet();
+        const res = await api.users.usersGet();
         return { data: res.data };
       },
     }),
     createUser: builder.mutation<User, CreateUserRequest>({
       queryFn: async (body) => {
-        const res = await usersApi.usersPost(body);
+        const res = await api.users.usersPost(body);
         return { data: res.data };
       }
     })
@@ -549,15 +590,17 @@ export function useUsers() {
 转换后：
 ```typescript
 import { useQuery } from '@tanstack/react-query';
-import { UsersApi } from '../api';
+import { Api } from '../api';
 
-const usersApi = new UsersApi();
+const api = new Api({
+  baseURL: 'https://api.example.com', // 或使用环境变量
+});
 
 export function useUsers() {
   return useQuery({
     queryKey: ['users'],
     queryFn: async () => {
-      const res = await usersApi.usersGet();
+      const res = await api.users.usersGet();
       return res.data;
     }
   });
@@ -625,7 +668,7 @@ npx tsc --noEmit
 2. **类型处理**：完全复用 SDK 生成的类型，删除原有 mock 类型
 3. **备份建议**：执行前建议用户提交当前代码，以便必要时回滚
 4. **路径别名**：如果项目使用路径别名（如 `@/api`），需要额外配置
-5. **请求拦截器**：如需统一处理认证、错误等，在 `api/base.ts` 中配置
+5. **请求拦截器**：如需统一处理认证、错误等，通过 `api.instance.interceptors` 配置（参见 FAQ）
 6. **Proxy 配置**：开发环境代理仅解决开发时的跨域问题，生产环境需要确保部署后 API 可正常访问
 7. **数据获取库**：转换后的代码保持原有数据获取库的使用模式（queryKey、缓存策略等）
 8. **Apollo Client**：如果使用 GraphQL，需要单独生成 GraphQL 客户端或使用 Apollo REST Link
@@ -645,7 +688,38 @@ A: OpenAPI 的 `operationId` 字段决定方法名，可在文档中调整。
 A: 将优先使用 SDK 类型，需要手动调整代码中的类型引用。
 
 **Q: 需要自定义 axios 配置（如超时、拦截器）？**
-A: 可在 `api/base.ts` 中修改 `axiosInstance` 配置。
+A: `swagger-typescript-api` 生成的 SDK 暴露了 axios 实例，可以直接配置：
+```typescript
+const api = new Api({
+  baseURL: 'https://api.example.com',
+  timeout: 10000, // 超时配置
+});
+
+// 添加请求拦截器
+api.instance.interceptors.request.use(
+  (config) => {
+    // 在发送请求之前做些什么
+    config.headers.Authorization = `Bearer ${token}`;
+    return config;
+  },
+  (error) => {
+    // 对请求错误做些什么
+    return Promise.reject(error);
+  }
+);
+
+// 添加响应拦截器
+api.instance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // 统一处理错误
+    if (error.response?.status === 401) {
+      // 处理未授权
+    }
+    return Promise.reject(error);
+  }
+);
+```
 
 **Q: 生产环境需要使用 Proxy 吗？**
 A: 不需要。Proxy 仅用于开发环境解决跨域问题。生产环境应确保 API 服务器支持 CORS，或使用同源部署策略。
