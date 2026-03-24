@@ -4,9 +4,34 @@ description: 根据验收标准自动在浏览器中验证
 ---
 
 **开始时：**
-1. 读取 `docs/requirements.md` 文件中的验收标准（预期按页面分组格式：每个页面作为 #### 四级标题，下面列出该页面的验收项）
-2. **按页面分组解析验收标准**，识别每个功能页面及其验收项
-3. **必须**使用 `AskUserQuestion` tool 让用户选择，采用**页面维度多问题模式**：
+1. 读取 `docs/requirements.md` 文件中的验收标准
+2. **按页面分组解析验收标准**：
+
+   **Requirements.md 格式 → Questions JSON 映射关系：**
+
+   ```markdown
+   #### 【页面】登录页              ← question.header = "登录页"
+   - [ ] 用户可以通过邮箱和密码登录   ← options[0].label
+   - [ ] 密码错误时显示提示信息      ← options[1].label
+   - [ ] 登录成功后跳转到首页        ← options[2].label
+
+   #### 【页面】首页               ← question.header = "首页"
+   - [ ] 展示用户统计数据          ← options[0].label
+   - [ ] 支持快速导航到各模块       ← options[1].label
+
+   #### 【页面】用户管理页          ← question.header = "用户管理页"
+   - [ ] 展示用户列表             ← options[0].label
+   - [ ] 支持分页和搜索            ← options[1].label
+   ```
+
+   **映射规则：**
+   - 标题中包含 `【页面】` 标记的识别为页面标题（支持任意级别标题 `#` `##` `###` `####` 等）
+   - `header` = `【页面】` 后的内容
+   - `question` = `【{页面标题}】请选择要验证的验收项`
+   - `multiSelect: true`（每个页面可多选）
+   - 该页面标题下的每个 `- [ ]` 列表项 → `options` 数组中的一个 `{label: "验收项内容"}`
+
+3. **按上述映射规则生成 AskUserQuestion 调用**：
 
 ### 选择要验证的验收项
 
