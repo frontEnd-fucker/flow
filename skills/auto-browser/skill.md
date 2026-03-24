@@ -6,7 +6,7 @@ description: 根据验收标准自动在浏览器中验证
 **开始时：**
 1. 读取 `docs/requirements.md` 文件中的验收标准
 2. **按页面分组解析验收标准**，识别每个功能页面及其验收项
-3. **必须**使用 `AskUserQuestion` tool 让用户选择，采用**两步选择法**：
+3. **必须**使用 `AskUserQuestion` tool 让用户选择，采用**页面维度多选模式**：
 
 ### 第一步：选择要验证的页面
 
@@ -27,32 +27,40 @@ description: 根据验收标准自动在浏览器中验证
 }
 ```
 
-### 第二步：对每个页面选择验收项
+### 第二步：为每个页面选择验收项
 
-对用户在第一步选中的每个页面，依次询问该页面的具体验收项：
+**在一个 AskUserQuestion 调用中，为每个选中的页面创建一个 question**：
 
 ```json
 {
   "questions": [
     {
       "question": "【登录页】请选择要验证的验收项",
-      "header": "登录页验收标准",
+      "header": "登录页",
       "multiSelect": true,
       "options": [
         {"label": "用户可以通过邮箱和密码登录"},
         {"label": "密码错误时显示提示信息"},
         {"label": "登录成功后跳转到首页"}
       ]
+    },
+    {
+      "question": "【首页】请选择要验证的验收项",
+      "header": "首页",
+      "multiSelect": true,
+      "options": [
+        {"label": "展示用户统计数据"},
+        {"label": "支持快速导航到各模块"},
+        {"label": "显示系统通知"}
+      ]
     }
   ]
 }
 ```
 
-重复此步骤直到所有选中页面的验收项都选择完毕。
-
 ⚠️ **重要**：
-- 必须分两步进行：先选页面，再选各页面的验收项
-- 每个步骤都必须使用 AskUserQuestion 工具
+- 一次 AskUserQuestion 调用可以包含多个 question，每个页面对应一个 question
+- 每个 question 的 `multiSelect: true` 允许选择该页面的多个验收项
 - 禁止直接输出文本列表
 
 **用户选择后：**
