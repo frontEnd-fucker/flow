@@ -12,10 +12,10 @@ description: 需求理解阶段 - 理解需求、技术选型、存量代码分�
 ## 约束规则（必须遵守）
 
 **交互模式：单问题递进**
-- 每次对话只能向用户提出**一个**问题
+- 每次对话只能向用户提出**一个**问题（技术方案选型除外，可一次性提问所有维度）
 - 必须得到用户回答后，才能提出下一个问题
 - 技术选型问题必须使用选项按钮，以 options 数组形式提供可点击选项
-- 禁止在一次回复中提出多个问题
+- 禁止在一次回复中提出多个问题（技术方案选型除外）
 
 
 ## 清单
@@ -42,15 +42,25 @@ description: 需求理解阶段 - 理解需求、技术选型、存量代码分�
   b. 把生成报告写到prototype.md文件，保存到`/prototype`文件夹
 
 3. 技术方案选型
-**必须使用 `AskUserQuestion` 内置工具，以选项方式向用户提问。**
+**必须使用 `AskUserQuestion` 内置工具，一次性提问所有技术选型维度。**
 
-**工具调用格式示例（选用框架）：**
+**工具调用格式示例：**
 ```json
 {
   "questions": [
     {
+      "question": "站点类型？",
+      "header": "站点类型",
+      "options": [
+        {"label": "PC端", "value": "pc"},
+        {"label": "移动端", "value": "mobile"},
+        {"label": "自适应", "value": "responsive"},
+        {"label": "其他（请说明）", "value": "other"}
+      ]
+    },
+    {
       "question": "选用什么前端框架？",
-      "header": "技术栈选择 - 框架",
+      "header": "框架",
       "options": [
         {"label": "React", "value": "react"},
         {"label": "Vue", "value": "vue"},
@@ -59,39 +69,138 @@ description: 需求理解阶段 - 理解需求、技术选型、存量代码分�
         {"label": "原生 JS", "value": "vanilla"},
         {"label": "其他（请说明）", "value": "other"}
       ]
+    },
+    {
+      "question": "开发语言？",
+      "header": "语言",
+      "options": [
+        {"label": "TypeScript", "value": "typescript"},
+        {"label": "JavaScript", "value": "javascript"},
+        {"label": "其他（请说明）", "value": "other"}
+      ]
+    },
+    {
+      "question": "样式方案？",
+      "header": "样式方案",
+      "options": [
+        {"label": "Tailwind CSS", "value": "tailwind"},
+        {"label": "CSS Modules", "value": "css-modules"},
+        {"label": "Styled-components", "value": "styled-components"},
+        {"label": "Less", "value": "less"},
+        {"label": "Sass/Scss", "value": "sass"},
+        {"label": "其他（请说明）", "value": "other"}
+      ]
+    },
+    {
+      "question": "状态管理方案？",
+      "header": "状态管理",
+      "options": [
+        {"label": "Redux", "value": "redux"},
+        {"label": "Zustand", "value": "zustand"},
+        {"label": "Pinia", "value": "pinia"},
+        {"label": "Vuex", "value": "vuex"},
+        {"label": "Context API", "value": "context-api"},
+        {"label": "Jotai", "value": "jotai"},
+        {"label": "MobX", "value": "mobx"},
+        {"label": "其他（请说明）", "value": "other"}
+      ]
+    },
+    {
+      "question": "网络请求工具？",
+      "header": "网络请求",
+      "options": [
+        {"label": "Axios", "value": "axios"},
+        {"label": "Fetch", "value": "fetch"},
+        {"label": "ky", "value": "ky"},
+        {"label": "其他（请说明）", "value": "other"}
+      ]
+    },
+    {
+      "question": "异步数据管理？",
+      "header": "异步数据管理",
+      "options": [
+        {"label": "TanStack Query (React Query)", "value": "tanstack-query"},
+        {"label": "SWR", "value": "swr"},
+        {"label": "Redux Toolkit Query", "value": "rtk-query"},
+        {"label": "Vue Query", "value": "vue-query"},
+        {"label": "其他（请说明）", "value": "other"}
+      ]
+    },
+    {
+      "question": "Mock数据方案？",
+      "header": "Mock数据",
+      "options": [
+        {"label": "不需要Mock数据", "value": "none"},
+        {"label": "本地Mock数据", "value": "local-mock"},
+        {"label": "MSW (Mock Service Worker)", "value": "msw"},
+        {"label": "其他（请说明）", "value": "other"}
+      ]
+    },
+    {
+      "question": "路由方案？",
+      "header": "路由",
+      "options": [
+        {"label": "React Router", "value": "react-router"},
+        {"label": "Next.js 内置路由", "value": "nextjs-router"},
+        {"label": "Vue Router", "value": "vue-router"},
+        {"label": "TanStack Router", "value": "tanstack-router"},
+        {"label": "其他（请说明）", "value": "other"}
+      ]
+    },
+    {
+      "question": "构建工具？",
+      "header": "构建工具",
+      "options": [
+        {"label": "Vite", "value": "vite"},
+        {"label": "Webpack", "value": "webpack"},
+        {"label": "Bun", "value": "bun"},
+        {"label": "Rollup", "value": "rollup"},
+        {"label": "Parcel", "value": "parcel"},
+        {"label": "其他（请说明）", "value": "other"}
+      ]
+    },
+    {
+      "question": "组件库？",
+      "header": "组件库",
+      "options": [
+        {"label": "shadcn/ui", "value": "shadcn"},
+        {"label": "Ant Design", "value": "antd"},
+        {"label": "Ant Design Mobile", "value": "antd-mobile"},
+        {"label": "Element Plus", "value": "element-plus"},
+        {"label": "Element UI", "value": "element-ui"},
+        {"label": "Chakra UI", "value": "chakra-ui"},
+        {"label": "MUI (Material-UI)", "value": "mui"},
+        {"label": "不需要组件库", "value": "none"},
+        {"label": "其他（请说明）", "value": "other"}
+      ]
+    },
+    {
+      "question": "包管理工具？",
+      "header": "包管理工具",
+      "options": [
+        {"label": "pnpm", "value": "pnpm"},
+        {"label": "npm", "value": "npm"},
+        {"label": "yarn", "value": "yarn"},
+        {"label": "Bun", "value": "bun"},
+        {"label": "其他（请说明）", "value": "other"}
+      ]
     }
   ]
 }
 ```
 
-**询问顺序（必须分步进行，每步等待用户选择后再问下一个）：**
-
-| 步骤 | 维度 | 选项配置 |
-|------|------|----------|
-| 1 | 站点类型 | PC端 / 移动端 / 自适应 |
-| 2 | 框架 | React / Vue / Next.js / Nuxt / 原生 JS / 其他 |
-| 3 | 语言 | TypeScript / JavaScript |
-| 4 | 样式方案 | Tailwind / CSS Modules / Styled-components / 其他 |
-| 5 | 状态管理 | Redux / Zustand / Pinia / Vuex / Context API / 其他 |
-| 6 | 数据获取 | Tanstack Query / SWR / Axios / Fetch / 本地mock数据 / 使用MSW (Mock Service Worker) mock数据 / 其他 |
-| 7 | 路由 | React Router / Next.js 内置 / Vue Router / 其他 |
-| 8 | 构建工具 | Vite / Webpack / Bun / Rollup / 其他 |
-| 9 | 组件库 | shadcn / antd / antd-mobile / elementUI / 其他 |
-| 10 | 包管理工具 ｜ pnpm / npm / yarn / 其他 ｜
-
 **关键约束：**
-1. **一次只问一个维度** - 禁止使用多选框一次性询问多个维度
-2. **必须使用选项按钮** - 以 `options` 数组形式提供可点击选项，禁止纯文字列表
-3. **等待用户响应** - 上一步得到选择结果后，才能询问下一步
-4. **包含"其他"选项** - 每个维度都必须有"其他"选项，允许用户自定义
+1. **一次性提问所有维度** - 使用 `AskUserQuestion` 一次提问所有 12 个技术选型维度
+2. **必须使用选项按钮** - 每个维度以 `options` 数组形式提供可点击选项
+3. **包含"其他"选项** - 每个维度都必须有"其他"选项，允许用户自定义
 
 **完成技术选型后必须询问：**
-- 在完成上述所有技术选型询问后，必须向用户提问："是否还需要指定其他 npm 包？例如：图表库、日期处理库、表单验证库等。"
+- 在用户完成上述技术选型后，必须向用户提问："是否还需要指定其他 npm 包？例如：图表库、日期处理库、表单验证库等。"
 - 如果用户指定了其他 npm 包，将这些包记录在需求理解文档的「技术选型」部分
 
 
 
-3. 存量代码协作（如适用）
+4. 存量代码协作（如适用）
 如果是在既有代码库中工作：
 - **探索是否有原型页面**
 

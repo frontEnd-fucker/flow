@@ -195,30 +195,7 @@ module.exports = {
 > ✅ 已配置开发环境代理：
 > - 开发时请求 `/api/users` 将代理到 `https://api.example.com/users`
 
-#### 步骤 3.4: 询问数据获取方案
-
-使用 `AskUserQuestion` 工具：
-
-```json
-{
-  "questions": [
-    {
-      "question": "请选择项目中使用的数据获取方案",
-      "header": "数据获取库",
-      "options": [
-        {"label": "直接使用 SDK/Axios", "description": "直接调用 SDK 方法"},
-        {"label": "Tanstack Query (React Query)", "description": "使用 useQuery/useMutation"},
-        {"label": "SWR", "description": "使用 useSWR"},
-        {"label": "RTK Query", "description": "Redux Toolkit Query"},
-        {"label": "Apollo Client", "description": "GraphQL 客户端"},
-        {"label": "其他", "description": "其他方案"}
-      ]
-    }
-  ]
-}
-```
-
-#### 步骤 3.5: 配置 SDK baseURL
+#### 步骤 3.4: 配置 SDK baseURL
 
 根据前面收集的信息，更新 SDK 配置：
 
