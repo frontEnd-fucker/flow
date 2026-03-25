@@ -35,8 +35,16 @@ description: 根据验收标准自动在浏览器中验证
 
 ### 选择要验证的验收项
 
-**在一个 AskUserQuestion 调用中，为每个功能页面创建一个 question**：
+**⚠️ 重要限制**：`AskUserQuestion` 工具每个 question 的 `options` 最多只能有 **4 个选项**。当一个页面的验收项超过 4 个时，需要将该页面拆分为多个 question。
 
+**在一个 AskUserQuestion 调用中，为每个功能页面创建一个或多个 question**：
+
+| 页面验收项数量 | 处理方式 |
+|-------------|---------|
+| ≤ 4 个 | 创建一个 question |
+| > 4 个 | 拆分为多个 question，每个最多 4 个选项，用 "1/2", "2/2" 区分 |
+
+**示例 1：单个页面验收项 ≤ 4 个**（创建一个 question）
 ```json
 {
   "questions": [
@@ -49,6 +57,34 @@ description: 根据验收标准自动在浏览器中验证
         {"label": "密码错误时显示提示信息"},
         {"label": "登录成功后跳转到首页"}
       ]
+    }
+  ]
+}
+```
+
+**示例 2：单个页面验收项 > 4 个**（拆分为多个 question）
+```json
+{
+  "questions": [
+    {
+      "question": "【登录页 - 1/2】请选择要验证的验收项",
+      "header": "登录页",
+      "multiSelect": true,
+      "options": [
+        {"label": "用户可以通过邮箱和密码登录"},
+        {"label": "密码错误时显示提示信息"},
+        {"label": "登录成功后跳转到首页"},
+        {"label": "支持记住密码功能"}
+      ]
+    },
+    {
+      "question": "【登录页 - 2/2】请选择要验证的验收项",
+      "header": "登录页",
+      "multiSelect": true,
+      "options": [
+        {"label": "支持第三方登录"},
+        {"label": "显示登录次数统计"}
+      ]
     },
     {
       "question": "【首页】请选择要验证的验收项",
@@ -56,29 +92,18 @@ description: 根据验收标准自动在浏览器中验证
       "multiSelect": true,
       "options": [
         {"label": "展示用户统计数据"},
-        {"label": "支持快速导航到各模块"},
-        {"label": "显示系统通知"}
-      ]
-    },
-    {
-      "question": "【用户管理页】请选择要验证的验收项",
-      "header": "用户管理页",
-      "multiSelect": true,
-      "options": [
-        {"label": "展示用户列表"},
-        {"label": "支持分页和搜索"},
-        {"label": "可以禁用/启用用户"}
+        {"label": "支持快速导航到各模块"}
       ]
     }
   ]
 }
 ```
 
-⚠️ **重要**：
-- 一次 AskUserQuestion 调用包含多个 question，每个功能页面对应一个 question
-- 每个 question 的 `multiSelect: true` 允许选择该页面的多个验收项
-- 用户可以为每个页面独立选择要验证的验收项
-- 禁止直接输出文本列表
+**规则总结**：
+- 每个 `options` 数组最多 4 个选项
+- 拆分后的 question 使用相同 `header`，`question` 文本添加 "- 1/2", "- 2/2" 序号
+- 一次 AskUserQuestion 调用可包含多个 question（多个页面或拆分的子页面）
+- 禁止直接输出文本列表让用户选择
 
 **用户选择后：**
 向用户确认，按页面分组展示：
