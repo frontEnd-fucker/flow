@@ -21,12 +21,13 @@ Task tool (general-purpose):
     ```
 
     ### 2. 原型页面注释
-    若文件为页面组件（路由组件），**必须**包含所使用的原型html，如果没有则标明没有使用原型html
+    若文件为页面组件（路由组件），**必须**包含所使用的原型html和figma信息，如果没有则标明没有使用原型html或figma
     ```typescript
     /**
      * @file DetailPage.tsx
      * @description 详情页面
      * @原型 prototype/detail.html
+     * @figma https://www.figma.com/design/cf1NMdWsFBbFuLfVslAwNe/Infrastructure-Projects----APP?node-id=2763-20457&m=dev
      */
     ```
 

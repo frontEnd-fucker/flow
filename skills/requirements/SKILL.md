@@ -37,9 +37,19 @@ description: 需求理解阶段 - 理解需求、技术选型、存量代码分�
   c. 将总结的内容展示给用户，等用户确认。
   d. 用户确认后，这部分<需求文档总结>内容需要添加到后续生成的需求文档  
 
-2. 询问用户是否有figma设计稿，没有则跳过此步骤，有的话让用户提供链接，提示用户每个页面提供一个figma链接，可以在figma dev模式下，按住shift键同时选中多个页面，然后点击“cope example prompt”。若用户提供了figma链接则按以下步骤执行
-  a. 使用figma mcp实现用户提供的页面，每个页面生成一个html页面到`/prototype`文件夹, 要求页面使用html + tailwindcss, **不要包含移动端顶部显示时间，电池信息的状态栏**.
-  b. 把生成报告写到prototype.md文件，保存到`/prototype`文件夹
+2. 询问用户是否有figma设计稿，没有则跳过此步骤，有的话让用户提供链接，提示用户每个页面提供一个figma链接，可以在figma dev模式下，按住shift键同时选中多个页面，然后点击”cope example prompt”。若用户提供了figma链接则按以下步骤执行
+  a. 使用 `get_design_context` 获取每个页面的设计信息
+  b. **下载 Figma 资源文件**：
+     - **方式1（推荐）**：从 `get_design_context` 返回的 `assetDownloadUrls` 中获取资源下载链接
+       - 这些 URL 是 Figma MCP server 内置 assets endpoint 提供的预签名链接
+       - 直接通过这些 URL 下载资源文件
+     - **方式2（备选）**：如需导出特定节点，使用 `use_figma` 执行 Plugin API 的 `exportAsync()` 方法导出图片
+  c. 保存所有资源到 `/public/assets/figma/` 目录下：
+     - 按页面分类存放，如 `/public/assets/figma/login/`、`/public/assets/figma/home/`
+     - 支持的资源类型：png, jpg, svg, pdf 等
+  d. 使用figma mcp实现用户提供的页面，每个页面生成一个html页面到`/prototype`文件夹, 要求页面使用html + tailwindcss, **不要包含移动端顶部显示时间，电池信息的状态栏**.
+     - 页面中引用的图片资源使用 `/assets/figma/{页面名}/` 路径
+  e. 把生成报告写到prototype.md文件，保存到`/prototype`文件夹
 
 3. 技术方案选型
 **必须使用 `AskUserQuestion` 内置工具，一次性提问所有技术选型维度。**
@@ -238,12 +248,12 @@ description: 需求理解阶段 - 理解需求、技术选型、存量代码分�
 [建议的目录结构]
 **约束**
 - **组件拆分必须要参考/prototype中的原型页面，参考/prototype/prototype.md了解页面结构，样式也要复原原型页面的设计**
-- 页面组件（路由组件）需要标明所使用的原型html，如果没有则标明没有使用原型html
+- 页面组件（路由组件）需要标明所使用的原型html和figma信息，如果没有则标明没有使用原型html和figma信息
   示例：
   │   ├── bookshelf/
-  │   │   └── index.tsx              # 书架页 页面原型:prototype/bookshelf.html
+  │   │   └── index.tsx              # 书架页 页面原型:prototype/bookshelf.html figma：https://www.figma.com/design/cf1NMdWsFBbFuLfVslAwNe/Infrastructure-Projects----APP?node-id=2763-19984&m=dev
   │   ├── detail/
-  │   │   └── index.tsx              # 书籍详情页 页面原型:prototype/detail.html
+  │   │   └── index.tsx              # 书籍详情页 页面原型:prototype/detail.html figma：https://www.figma.com/design/cf1NMdWsFBbFuLfVslAwNe/Infrastructure-Projects----APP?node-id=2763-20457&m=dev
 
 ### 5. 组件设计
 - 样式参考原型页面：`/prototype/prototype.md` 及对应 原型HTML文件
