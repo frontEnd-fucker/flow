@@ -16,6 +16,8 @@ description: 根据多个 Figma 设计稿批量生成完整的 HTML 原型页面
 
 ## 执行流程
 
+**严格按照 skill 流程的每一步执行，不要跳过任何步骤，完成一步确认后再进行下一步**
+
 ### 第 1 步：收集 Figma 链接（支持多 URL）
 
 **询问用户：**
@@ -52,21 +54,9 @@ https://figma.com/design/AbCdEf123/ProjectName?node-id=1-2
 
 ### 第 2 步：获取设计 Token
 
-**使用任意一个页面的 nodeId 获取该文件的设计变量：**
+并行调用 `get_design_context`，参考以下示例参入准确的参数：
 
-**调用 `get_variable_defs`：**
-
-```json
-{
-  "fileKey": "从URL提取的fileKey",
-  "nodeId": "任意一个页面的nodeId"
-}
-```
-
-#### 兜底方案：get_design_context
-
-当 `get_variable_defs` 失败时，调用 `get_design_context`：
-
+参数示例：
 ```json
 {
   "fileKey": "AbCdEf123",
@@ -74,7 +64,7 @@ https://figma.com/design/AbCdEf123/ProjectName?node-id=1-2
 }
 ```
 
-从返回的信息中提取颜色值、字体大小等作为 token。
+从{返回的context信息}中提取颜色值、字体大小等作为 token。
 
 | Token 类型 | 用途 | Tailwind 映射 |
 |-----------|------|--------------|
@@ -154,33 +144,67 @@ module.exports = {
 
 ---
 
-### 第 4 步：批量下载 Figma 资源（icon，logo）
+### 第 4 步：批量下载 Figma 资源（icon，logo），**绝不能跳过此步骤**
 
-#### 4.1 并行获取所有页面的设计上下文
+#### 4.1 收集资源链接
 
-**对每个 URL 并行调用 `get_design_context`：**
+**从{返回的context信息}中提取资源链接，筛选图标资源并去重：**
 
-```json
-{
-  "fileKey": "AbCdEf123",
-  "nodeId": "1:2"
-}
+**执行步骤：**
+a. **筛选图标资源**
+   - **包含条件**（满足任一）：
+     - 文件扩展名为 `.svg` 或 `.png`
+     - 文件名包含 `icon`、`logo` 或 `symbol`（不区分大小写）
+   - **排除条件**：
+     - 文件扩展名为 `.jpg`、`.jpeg`、`.gif`、`.webp` 的图片文件
+
+b. **按 URL 去重**
+   - 使用资源 URL 作为唯一标识
+   - 相同 URL 的资源只保留一条记录
+
+c. **输出资源链接列表**
+   - 总资源数量和去重后的唯一资源数量
+   - 生成包含下载链接的结构化资源列表
+
+**输出格式：**
+
+去重后的 URL 列表（仅包含下载链接）：
+
 ```
-收集所有页面的资源链接。
+https://s3.figma.com/.../icon-search.svg?...
+https://s3.figma.com/.../icon-close.svg?...
+https://s3.figma.com/.../logo.png?...
+...
+```
 
-#### 4.2 提取和合并资源下载链接
-通过Figma MCP 服务内置的 assets endpoint下载所有icon，将icon保存到项目的 `/public/icons`文件夹下
+#### 4.3 **输出摘要信息：**
+```
+✅ 资源链接收集完成
 
-**约束**
-- 去重：相同 URL 的资源只下载一次
+📊 统计：
+   - 总资源数：12
+   - 去重后：10（2个重复）
+   - 通用图标：5
+   - 页面专属：7
+
+🔗 下载链接已准备，共 10 个唯一 URL
+```
+
+#### 4.4 下载图标资源
+
+通过 Figma MCP 服务内置的 assets endpoint 下载所有图标资源：
+步骤：
+a. 创建输出目录：`/public/icons`
+b. 遍历收集的图标资源列表
+c. 对每个资源的下载 URL，调用下载工具保存到`/public/icons`
 
 ---
 
-### 第 5 步：生成图标组件入口
+### 第 5 步：生成图标入口文件
 
-**使用SVGR插件**
+生成图片的引用入口文件，该文件需要配合`SVGR插件`使用
 
-**示例**
+**文件示例**
 `**/components/icons/index.ts`
 
 ```typescript
@@ -198,21 +222,13 @@ export { default as IconMenu } from './home/IconMenu';
 export { default as IconNotification } from './home/IconNotification';
 ```
 
-#### 5.2 使用方式
-
-```tsx
-import { IconSearch, IconUser } from '@/components/icons';
-
-// 在组件中使用
-<button>
-  <IconSearch className="w-5 h-5 text-primary-500" />
-  搜索
-</button>
-```
-
 ---
 
 ### 第 6 步：批量生成原型页面,保存到项目`/prototype`文件夹
+
+**开始前：** 开始前先必须检查第4步和第5步是否已经完成
+**实现原则：** 不使用inline svg icon，使用下载好的资源
+
 
 #### 6.1 使用figma mcp实现用户提供的页面，为每个页面生成一个 HTML（使用html + tainwindcss，保存到项目`/prototype`文件夹
 
@@ -244,9 +260,85 @@ import { IconSearch, IconUser } from '@/components/icons';
 
 ---
 
-### 第 7 步：生成汇总报告
+### 第 7 步：生成导航入口页面
 
-#### 7.1 创建 /prototype/prototype.md
+创建 `/prototype/index.html` 作为所有原型页面的导航入口：
+
+#### 7.1 导航页内容
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>原型导航</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="./tailwind.config.js"></script>
+  <link rel="stylesheet" href="./styles/tailwind.css">
+</head>
+<body class="bg-neutral-50 min-h-screen">
+  <div class="max-w-4xl mx-auto py-12 px-6">
+    <h1 class="text-3xl font-bold text-neutral-900 mb-2">Figma 原型</h1>
+    <p class="text-neutral-600 mb-8">共生成 {N} 个页面</p>
+
+    <div class="grid gap-4">
+      <!-- 页面卡片 -->
+      <a href="./pages/login/index.html"
+         class="block bg-white rounded-lg shadow-sm border border-neutral-200 p-6 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-lg font-semibold text-neutral-900">登录页</h2>
+            <p class="text-sm text-neutral-500 mt-1">./pages/login/index.html</p>
+          </div>
+          <span class="text-neutral-400">→</span>
+        </div>
+      </a>
+
+      <a href="./pages/home/index.html"
+         class="block bg-white rounded-lg shadow-sm border border-neutral-200 p-6 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-lg font-semibold text-neutral-900">首页</h2>
+            <p class="text-sm text-neutral-500 mt-1">./pages/home/index.html</p>
+          </div>
+          <span class="text-neutral-400">→</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="mt-12 pt-8 border-t border-neutral-200">
+      <h3 class="text-sm font-medium text-neutral-900 mb-4">设计 Token</h3>
+      <div class="flex flex-wrap gap-2">
+        <span class="px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm">primary-500</span>
+        <span class="px-3 py-1 bg-neutral-100 text-neutral-700 rounded-full text-sm">neutral-100</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+```
+
+#### 7.2 生成规则
+
+1. **页面标题**：显示 "Figma 原型 - {项目名}"
+2. **页面列表**：
+   - 每个页面一个卡片
+   - 显示页面名称和文件路径
+   - 点击卡片跳转到对应页面
+   - 按页面顺序排列
+3. **设计 Token 预览**：
+   - 显示主要颜色 token 的色块
+   - 可选：显示字体、间距等关键 token
+4. **资源统计**：
+   - 图标总数
+   - 图片总数
+
+---
+
+### 第 8 步：生成汇总报告
+
+#### 8.1 创建 /prototype/prototype.md
 
 ```markdown
 # Figma 原型生成报告
