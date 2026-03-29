@@ -54,17 +54,16 @@ https://figma.com/design/AbCdEf123/ProjectName?node-id=1-2
 
 ### 第 2 步：获取设计 Token
 
-并行调用 `get_design_context`，参考以下示例参入准确的参数：
+a.带上获取到的fileKey和nodeId作为参数，并行调用`get_design_context`.
+  **调用规范**:
+  必须传入以下参数：
+  - fileKey: 必须是字符串（例如 "Abc123456"）
+  - nodeId: 必须是字符串（例如 "10:140"）
 
-参数示例：
-```json
-{
-  "fileKey": "AbCdEf123",
-  "nodeId": "1:2"
-}
-```
+  调用示例：
+  `get_design_context(fileKey="实际的fileKey", nodeId="实际的nodeId")`
 
-从{返回的context信息}中提取颜色值、字体大小等作为 token。
+b.从{返回的context信息}中提取颜色值、字体大小等作为 token。
 
 | Token 类型 | 用途 | Tailwind 映射 |
 |-----------|------|--------------|
@@ -151,12 +150,7 @@ module.exports = {
 **从{返回的context信息}中提取资源链接，筛选图标资源并去重：**
 
 **执行步骤：**
-a. **筛选图标资源**
-   - **包含条件**（满足任一）：
-     - 文件扩展名为 `.svg` 或 `.png`
-     - 文件名包含 `icon`、`logo` 或 `symbol`（不区分大小写）
-   - **排除条件**：
-     - 文件扩展名为 `.jpg`、`.jpeg`、`.gif`、`.webp` 的图片文件
+a. **筛选图标资源，确保只包含图标资源，不包含图片资源**
 
 b. **按 URL 去重**
    - 使用资源 URL 作为唯一标识
@@ -196,11 +190,21 @@ https://s3.figma.com/.../logo.png?...
 步骤：
 a. 创建输出目录：`/public/icons`
 b. 遍历收集的图标资源列表
-c. 对每个资源的下载 URL，调用下载工具保存到`/public/icons`
+c. 对每个资源的下载 URL，调用下载工具指定输出路径为 `./public/icons/文件名.svg`，参考以下示例。
+
+**下载示例**
+```
+# 第一步：强制创建物理目录
+mkdir -p ./public/icons
+
+# 第二步：使用完整路径进行原子化下载
+curl -sL "https://figma-alpha.s3..." -o "./public/icons/icon-arrow-left.svg"
+curl -sL "https://figma-alpha.s3..." -o "./public/icons/icon-search.svg"
+```
 
 ---
 
-### 第 5 步：生成图标入口文件
+### 第 5 步：生成图标入口文件，**绝不能跳过此步骤**
 
 生成图片的引用入口文件，该文件需要配合`SVGR插件`使用
 
@@ -226,7 +230,7 @@ export { default as IconNotification } from './home/IconNotification';
 
 ### 第 6 步：批量生成原型页面,保存到项目`/prototype`文件夹
 
-**开始前：** 开始前先必须检查第4步和第5步是否已经完成
+**开始前：** 开始前先必须检查第4步和第5步是否已经完成，如未完成则重新执行第4步或第5步，直到它们都完成
 **实现原则：** 不使用inline svg icon，使用下载好的资源
 
 
@@ -410,6 +414,9 @@ export { default as IconNotification } from './home/IconNotification';
 - **图片**: hero-banner.png, feature-1.png
 ```
 ---
+
+## 完成后
+- 检查是否有未完成的步骤，若有则**必须将它完成**
 
 ## 约束和注意事项
 
