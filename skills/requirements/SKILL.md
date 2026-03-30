@@ -26,30 +26,20 @@ description: 需求理解阶段 - 理解需求、技术选型、存量代码分�
 - 询问用户提供需求文档链接或直接描述需求
 - “请描述一下你的项目需求：这个项目要解决什么问题？ （或者如果你有需求文档/PRD链接，或者有本地word文件，也可以直接分享）”
 - 如果用户提供需求文档/PRD链接执行以下步骤
-  a. 开始前向用户宣告“我将会通过浏览器访问你提供的链接”
-  b. 使用 `/chrome-devtools` 在浏览器中打开连接，当遇到长页面时需要向下滚动页面来查看所有需求文档内容**确保完整获取文档中的所有内容**并总结成需求内容，需求内容要求**详细，包含需求文档中的每个细小功能点**。
+  a. 开始前向用户宣告”我将会通过 lark-cli 获取你提供的飞书文档链接内容”
+  b. 使用 `lark-cli docs +fetch --doc` 命令获取飞书文档内容，**确保完整获取文档中的所有内容**并总结成需求内容，需求内容要求**详细，包含需求文档中的每个细小功能点**。
   c. 将总结的内容写到`prd-sumerize.md`储存到`/docs`文件夹下
   d. 将总结的内容展示给用户，等用户确认。
   e. 用户确认后，这部分<需求文档总结>内容需要添加到后续生成的需求文档
-- 如果用户提供word文件则执行以下步骤
-  a. 读取word文件内容并总结成需求内容，需求内容要求**详细，包含需求文档中的每个细小功能点**。
-  b. 将总结的内容写到`prd-sumerize.md`储存到`/docs`文件夹下
-  c. 将总结的内容展示给用户，等用户确认。
-  d. 用户确认后，这部分<需求文档总结>内容需要添加到后续生成的需求文档  
 
-2. 询问用户是否有figma设计稿，没有则跳过此步骤，有的话让用户提供链接，提示用户每个页面提供一个figma链接，可以在figma dev模式下，按住shift键同时选中多个页面，然后点击”cope example prompt”。若用户提供了figma链接则按以下步骤执行
-  a. 使用 `get_design_context` 获取每个页面的设计信息
-  b. **下载 Figma 资源文件**：
-     - **方式1（推荐）**：从 `get_design_context` 返回的 `assetDownloadUrls` 中获取资源下载链接
-       - 这些 URL 是 Figma MCP server 内置 assets endpoint 提供的预签名链接
-       - 直接通过这些 URL 下载资源文件
-     - **方式2（备选）**：如需导出特定节点，使用 `use_figma` 执行 Plugin API 的 `exportAsync()` 方法导出图片
-  c. 保存所有资源到 `/public/assets/figma/` 目录下：
-     - 按页面分类存放，如 `/public/assets/figma/login/`、`/public/assets/figma/home/`
-     - 支持的资源类型：png, jpg, svg, pdf 等
-  d. 使用figma mcp实现用户提供的页面，每个页面生成一个html页面到`/prototype`文件夹, 要求页面使用html + tailwindcss, **不要包含移动端顶部显示时间，电池信息的状态栏**.
-     - 页面中引用的图片资源使用 `/assets/figma/{页面名}/` 路径
-  e. 把生成报告写到prototype.md文件，保存到`/prototype`文件夹
+2. 询问用户是否有figma设计稿，没有则跳过此步骤，有的话让用户提供链接，提示用户每个页面提供一个figma链接，可以在figma dev模式下，按住shift键同时选中多个页面，然后点击”copy example”。若用户提供了figma链接则执行以下步骤：
+  a. 调用 `/figma-prototype` skill 批量生成原型页面
+  b. 原型页面将保存到 `/prototype` 文件夹，包含：
+     - 各页面的 HTML 原型文件（使用 HTML + TailwindCSS）
+     - 图标资源下载到 `/public/icons/`
+     - 共享的 `tailwind.config.js` 配置文件
+     - 导航入口页面 `/prototype/index.html`
+     - 生成报告 `/prototype/prototype.md`
 
 3. 技术方案选型
 **必须使用 `AskUserQuestion` 内置工具，一次性提问所有技术选型维度。**
@@ -228,9 +218,9 @@ description: 需求理解阶段 - 理解需求、技术选型、存量代码分�
   - 例如：文件过大、职责纠缠
   - 不要做过度重构
 
-## 输出：需求理解文档
+5. 输出：需求理解文档到`docs/`文件夹下
 
-完成此阶段后，输出需求理解文档，包含：
+输出需求理解文档，包含：
 
 ```
 ## 需求理解文档
@@ -307,4 +297,4 @@ description: 需求理解阶段 - 理解需求、技术选型、存量代码分�
 
 - 向用户展示需求理解文档
 - 询问用户是否有补充或修正
-- 确认后把文档保存到docs/文件夹下，并进入 Step 2: 规划阶段 ./planning/skill.md
+- 进入规划阶段 ./planning/skill.md

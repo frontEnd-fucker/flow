@@ -53,8 +53,8 @@ https://figma.com/design/AbCdEf123/ProjectName?node-id=1-2
 ---
 
 ### 第 2 步：获取设计 Token
-
-a.带上获取到的fileKey和nodeId作为参数，并行调用`get_design_context`.
+#### 步骤：
+a.传入 fileKey 和 nodeId 作为参数，使用正确的参数格式调用`get_design_context`.
   **调用规范**:
   必须传入以下参数：
   - fileKey: 必须是字符串（例如 "Abc123456"）
@@ -186,9 +186,9 @@ https://s3.figma.com/.../logo.png?...
 
 #### 4.4 下载图标资源
 
-通过 Figma MCP 服务内置的 assets endpoint 下载所有图标资源：
+通过 Figma MCP 服务内置的 assets endpoint 下载所有图标资源, 只需下载图标资源，对图片则在 HTML中直接使用远程 URL：
 步骤：
-a. 创建输出目录：`/public/icons`
+a. 创建输出目录：`/public/icons`，当你遇到问题，坚持把图标资源放到`/public/icons`，不要把图标资源放到`/prototype`目录中
 b. 遍历收集的图标资源列表
 c. 对每个资源的下载 URL，调用下载工具指定输出路径为 `./public/icons/文件名.svg`，参考以下示例。
 

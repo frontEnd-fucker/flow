@@ -38,7 +38,7 @@ description: 核心开发阶段 - 遵循 TDD、Figma 视觉对齐及多 Agent �
 
 ### 完成后
 - 向用户宣告： "所有开发任务已完成。进入自动化浏览器验证阶段"
-- 调用 `../auto-browser/skill.md` 进入自动化浏览器验证阶段
+- 调用auto-browser skill(`../auto-browser/skill.md`) 进入自动化浏览器验证阶段
 
 ### 关键原则
 1. **通用逻辑永远先写测试**: 通用逻辑不要跳过 TDD 流程
