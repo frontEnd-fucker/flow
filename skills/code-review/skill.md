@@ -25,4 +25,4 @@ description: 质量保障与评审 - Code Review。使用此 skill 进行代码�
 6. **总结**：用中文向用户汇报你完成了开发，并附带评审报告
 
 ### 完成后
-当执行完所有code review的改进建议后，询问用户是否再次使用浏览器自动化验收，如果用户回答是则使用 auto-browser skill再次验收，如何无需验收则使用 `write-test/skill` 编写e2e测试用例
+当执行完所有code review的改进建议后，询问用户是否再次使用浏览器自动化验收，如果用户回答是则使用 auto-browser skill再次验收，如果无需验收则使用 `write-test/skill` 编写e2e测试用例
