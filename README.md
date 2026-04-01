@@ -103,7 +103,3 @@ flow/
 - 保持 skill 名称与互相引用路径一致
 - 统一文档命名（尤其是 requirements 与 plan 的文件名）
 - 新增 skill 时同步更新本 README 的目录和命令清单
-
----
-
-如果你是第一次接入此仓库，建议先阅读 `docs/workflow.md`，再从 `/start` 进入完整流程。
