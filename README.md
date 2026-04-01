@@ -19,7 +19,6 @@ flow/
 ├── docs/
 │   └── workflow.md                  # 方法论文档
 ├── skills/
-│   ├── start/                       # 总入口：5 步工作流编排
 │   ├── requirements/                # 需求理解阶段
 │   ├── planning/                    # 规划阶段
 │   ├── coding/                      # 核心开发阶段
@@ -36,9 +35,9 @@ flow/
 └── README.md
 ```
 
-## 核心工作流（/start）
+## 核心工作流
 
-`start` skill 负责编排完整流程：
+按阶段顺序执行完整开发流程：
 
 1. `requirements`：需求理解与技术选型
 2. `planning`：任务拆解与计划文档
@@ -50,9 +49,8 @@ flow/
 
 ## 常用 Skills
 
-- `/start`：开启完整流程
-- `/requirements`：单独执行需求分析阶段
-- `/planning`：单独生成开发计划
+- `/requirements`：执行需求分析阶段
+- `/planning`：生成开发计划
 - `/coding`：按计划进行开发实施
 - `/auto-browser`：按验收项做自动化浏览器验证
 - `/code-review`：执行代码质量评审与改进
@@ -65,16 +63,13 @@ flow/
 
 ## 典型使用方式
 
-### 方式一：完整流程（推荐）
+按阶段顺序调用各 skill：
 
-1. 调用 `/start`
-2. 按提示完成需求输入、技术选型与计划审批
-3. 进入开发、验收与评审
-4. 如有缺陷，进入 `/bugfix`
-
-### 方式二：按阶段单独调用
-
-当你只需要某一环节时，可直接调用对应 skill（如 `/planning` 或 `/write-test`）。
+1. 调用 `/requirements` 完成需求分析
+2. 调用 `/planning` 生成开发计划
+3. 调用 `/coding` 按计划执行开发
+4. 调用 `/code-review` 进行质量评审
+5. 如有缺陷，调用 `/bugfix`
 
 ## 阶段产物约定（建议）
 
