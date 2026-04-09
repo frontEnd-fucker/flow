@@ -41,7 +41,7 @@ description: 需求理解阶段 - 理解需求、技术选型、存量代码分�
      - 导航入口页面 `/prototype/index.html`
      - 生成报告 `/prototype/prototype.md`
 
-3. 技术方案选型
+3. 技术方案选型（如果不是新项目则跳过此步骤）
 **必须使用 `AskUserQuestion` 内置工具，一次性提问所有技术选型维度。**
 
 **工具调用格式示例：**

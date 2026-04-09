@@ -8,6 +8,8 @@ description: 使用 Figma 截图对比实现页面与设计稿的差异
 
 ## 执行流程
 
+**当用户直接提供对比页面和figma链接时直接跳到第三步**
+
 **严格按照 skill 流程的每一步执行，不要跳过任何步骤，完成一步确认后再进行下一步**
 
 ### 第一步：**自动提取 Figma 链接**：
@@ -32,7 +34,7 @@ description: 使用 Figma 截图对比实现页面与设计稿的差异
 
 1. 扫描项目结构，识别所有页面文件
 2. 提取每个页面文件头部的 Figma 链接
-3. 生成页面列表供用户选择：
+3. 生成页面列表供用户选择，列表需要包含用户手动提交要review的页面和对应的figma节点的选项：
 
 ```json
 {
@@ -45,6 +47,7 @@ description: 使用 Figma 截图对比实现页面与设计稿的差异
         {"label": "登录页 - pages/login.tsx"},
         {"label": "首页 - pages/index.tsx"},
         {"label": "用户管理 - pages/users.tsx"}
+        {"label": "手动提交要review的页面和对应的figma节点"}
       ]
     }
   ]
@@ -61,22 +64,6 @@ description: 使用 Figma 截图对比实现页面与设计稿的差异
 
 使用 `get_screenshot` 工具传入正确参数获取 Figma 设计稿截图，传入以下参数：
 
-**参数提取规则：**
-- 从页面文件头部注释中的 Figma URL 提取 `fileKey` 和 `nodeId`
-- URL 格式：`https://figma.com/design/{fileKey}/{fileName}?node-id={nodeId}`
-- `nodeId` 需要把 `-` 替换为 `:`（如 `1-2` → `1:2`）
-
-**示例：**
-```typescript
-// 页面文件头部注释中的 Figma URL：
-// https://figma.com/design/AbCdEf123/ProjectName?node-id=2763-19984
-
-// 提取参数：
-// fileKey = "AbCdEf123"
-// nodeId = "2763:19984" (注意 - 已替换为 :)
-```
-
-**工具调用：**
 ```json
 {
   “fileKey”: “从URL提取的fileKey”,
