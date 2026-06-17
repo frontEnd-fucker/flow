@@ -2,13 +2,13 @@
 
 AI 协作开发工作流插件与技能库。
 
-本仓库提供一套从需求分析到缺陷修复的标准化 AI 协作流程，核心内容是可复用的 `skills` 提示词模板与流程编排文档，适用于新项目启动、复杂功能开发和持续迭代场景。
+本仓库提供一套从需求分析到测试验收的标准化 AI 协作流程，核心内容是可复用的 `skills` 提示词模板与流程编排文档，适用于新项目启动、复杂功能开发和持续迭代场景。
 
 ## 项目定位
 
 - 类型：工作流/技能仓库（不是业务应用源码）
 - 目标：将 AI 协作开发过程标准化、可追踪、可复用
-- 核心能力：需求理解与技术选型、任务拆解与执行计划、多 Agent 协同开发与 TDD 约束、浏览器自动化验收、代码评审与 E2E 测试补齐、缺陷单处理（单一假设 + 最小改动）
+- 核心能力：需求理解与技术选型、任务拆解与执行计划、多 Agent 协同开发与 TDD 约束、浏览器自动化验收、代码评审与 E2E 测试补齐
 
 ## 目录结构
 
@@ -25,7 +25,6 @@ plugins/flow/
 │   ├── auto-browser/                # 浏览器自动化验收
 │   ├── code-review/                 # 质量评审
 │   ├── write-test/                  # E2E 测试编写
-│   ├── bugfix/                      # 缺陷处理
 │   ├── api-connect/                 # Mock API 转真实 API
 │   ├── figma-prototype/             # Figma 转原型页面
 │   ├── figma-desktop-prototype/     # Figma Desktop MCP 转原型页面
@@ -43,7 +42,6 @@ plugins/flow/
 2. `planning`：任务拆解与计划文档
 3. `coding`：按计划执行开发（含多 Agent 约束）
 4. `code-review`：质量反馈循环与改进
-5. `bugfix`：缺陷单分析与修复闭环
 
 双兼容发布方案见仓库根目录：`docs/dual-compatible-plugin-plan.md`
 
@@ -55,7 +53,6 @@ plugins/flow/
 - `/auto-browser`：按验收项做自动化浏览器验证
 - `/code-review`：执行代码质量评审与改进
 - `/write-test`：按验收标准编写 Playwright E2E
-- `/bugfix`：按单一假设法处理缺陷
 - `/figma-prototype`：由 Figma 批量生成原型页面
 - `/figma-desktop-prototype`：仅使用 Figma Desktop MCP 生成原型页面
 - `/figma-review`：Figma 与实现页面截图比对
@@ -69,7 +66,6 @@ Claude Code 中按阶段顺序调用各 skill：
 2. 调用 `/flow:planning` 生成开发计划
 3. 调用 `/flow:coding` 按计划执行开发
 4. 调用 `/flow:code-review` 进行质量评审
-5. 如有缺陷，调用 `/flow:bugfix`
 
 Codex 中使用自然语言触发，例如：
 
@@ -103,7 +99,7 @@ Claude Code 插件元数据位于 `.claude-plugin/plugin.json`。
 Codex 插件元数据位于 `.codex-plugin/plugin.json`。
 
 - Name: `flow`
-- Version: `0.0.1`
+- Version: `0.0.3`
 - Description: `AI 协作开发工作流`
 
 ## 维护建议

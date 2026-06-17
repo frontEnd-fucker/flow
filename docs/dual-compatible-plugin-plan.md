@@ -87,7 +87,6 @@ Claude Code 调用示例：
 /flow:requirements
 /flow:planning
 /flow:coding
-/flow:bugfix
 ```
 
 Codex，GitHub 安装：
@@ -102,7 +101,6 @@ Codex 调用示例：
 ```text
 使用 flow 的 requirements skill 帮我做需求分析
 使用 flow 的 planning skill 生成执行计划
-使用 flow 的 bugfix 流程处理这个缺陷
 ```
 
 稳定版本安装：

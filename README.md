@@ -2,7 +2,7 @@
 
 Flow 是一个 AI 协作开发工作流插件仓库，同时支持 Claude Code 和 Codex 客户端。
 
-它提供从需求分析、计划拆解、编码执行、浏览器验收到代码评审、E2E 测试和缺陷修复的一组可复用 skills。插件本体位于 `plugins/flow/`，仓库根目录提供 Claude Code 与 Codex 各自的 marketplace 清单。
+它提供从需求分析、计划拆解、编码执行、浏览器验收到代码评审和 E2E 测试的一组可复用 skills。插件本体位于 `plugins/flow/`，仓库根目录提供 Claude Code 与 Codex 各自的 marketplace 清单。
 
 ## Repository Layout
 
@@ -49,7 +49,6 @@ flow/
 /flow:requirements
 /flow:planning
 /flow:coding
-/flow:bugfix
 ```
 
 ## Codex
@@ -82,7 +81,6 @@ Codex uses natural-language skill triggering. Examples:
 ```text
 使用 flow 的 requirements skill 帮我做需求分析
 使用 flow 的 planning skill 生成执行计划
-使用 flow 的 bugfix 流程处理这个缺陷
 ```
 
 Open a new Codex thread after installing or updating the plugin so the updated skills are loaded.
@@ -95,7 +93,6 @@ Open a new Codex thread after installing or updating the plugin so the updated s
 - `auto-browser`: 浏览器自动化验收
 - `code-review`: 代码质量评审
 - `write-test`: Playwright E2E 测试编写
-- `bugfix`: 缺陷工单处理
 - `api-connect`: Mock API 转真实 API
 - `figma-prototype`: Figma 转原型页面
 - `figma-desktop-prototype`: Figma Desktop MCP 转原型页面
